@@ -1,28 +1,13 @@
-#include <stdio.h>
+#include "binary_search_iterative.h"
 
-int binarySearch(int arr[], int low, int high, int x)
-{
-    while (low <= high) {
-        int mid = low + (high - low) / 2;
-        if (arr[mid] == x)
-            return mid;
-        if (arr[mid] < x)
-            low = mid + 1;
-
-        else
-            high = mid - 1;
+int binary_search_iterative(int *arr, int n, int key, long long *comparacoes) {
+    int l = 0, r = n - 1;
+    while (l <= r) {
+        (*comparacoes)++;
+        int m = l + (r - l) / 2;
+        if (arr[m] == key) return m;
+        if (arr[m] < key) l = m + 1;
+        else r = m - 1;
     }
-
     return -1;
-}
-
-int main(void)
-{
-    int arr[] = { 2, 3, 4, 10, 40 };
-    int n = sizeof(arr) / sizeof(arr[0]);
-    int x = 2;
-    int result = binarySearch(arr, 0, n - 1, x);
-   if(result == -1) printf("Element is not present in array");
-   else printf("Element is present at index %d\n",result);
-
 }
