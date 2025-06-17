@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+
+// Incluindo os cabeçalhos dos algoritmos de busca
 #include "../Algoritmos/binary_search.h"
+#include "../Algoritmos/interpolation_search.h"
 
 // Função para carregar o array de um arquivo
-int* carregar_array(const char *nome, int *tamanho) {
+int* carregar_array(const char* nome, int* tamanho) {
     FILE *fp = fopen(nome, "r");
     if (!fp) { perror("Erro ao abrir arquivo"); exit(1); }
     int capacidade = 1000, val, count = 0;
@@ -22,29 +25,38 @@ int* carregar_array(const char *nome, int *tamanho) {
     return vetor;
 }
 
-// Função para medir o tempo de execução e comparações
-void medirPerformance(int *arr, int size, int chave, const char *tipoEntrada, FILE *saida) {
+void medirComparacoesBinaria(int *arr, int size, int chave, const char *tipoEntrada, FILE *saida) {
     long long total_comp = 0;
-    double total_tempo = 0.0;
     int resultado = -1;
 
-    for (int i = 0; i < 20; i++){
+    for (int i = 0; i < 20; i++) {
         long long comparacoes = 0;
-        
-        struct timeval start, end;
-        gettimeofday(&start, NULL);
 
-        resultado = binarySearch(arr, 0, size - 1, chave);
+        resultado = binarySearch(arr, 0, size - 1, chave, &comparacoes);
 
-        gettimeofday(&end, NULL);
         total_comp += comparacoes;
-        total_tempo += (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
 
-         fprintf(saida, "binary_recursive,%s,%d,%d,%d,%lld,%.8f\n",
-            tipoEntrada, size, chave, resultado, comparacoes,
-            (double)(end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec) / 1000000.0);
+        fprintf(saida, "binary_recursive,%s,%d,%d,%d,%lld\n",
+            tipoEntrada, size, chave, resultado, comparacoes);
     }
+}
 
+void medirComparacoesInterpolacao(int *arr, int size, int chave, const char *tipoEntrada, FILE *saida) {
+    long long total_comp = 0;
+    int resultado = -1;
+
+    for (int i = 0; i < 20; i++) {
+        long long comparacoes = 0;
+
+        // Realiza a busca por interpolação
+        resultado = busca_interpolacao(arr, size, chave, &comparacoes);
+
+        total_comp += comparacoes;
+
+
+        fprintf(saida, "interpolation_search,%s,%d,%d,%d,%lld\n",
+            tipoEntrada, size, chave, resultado, comparacoes);
+    }
 }
 
 int main() {
@@ -71,28 +83,35 @@ int main() {
     };
 
     const int num_entradas = sizeof(entradas) / sizeof(entradas[0]);
-    FILE *saida = fopen("../Resultados/test_binary.csv", "w");
-    if (!saida) { perror("Erro ao abrir arquivo CSV"); return 1; }
-    fprintf(saida, "algoritmo,arquivo,tamanho,chave,indice,comparacoes,tempo\n");
+
+    // Arquivo CSV para busca binária
+    FILE *saida_binaria = fopen("../Resultados/test_binary_uniform.csv", "w");
+    if (!saida_binaria) { perror("Erro ao abrir arquivo CSV de busca binária"); return 1; }
+    fprintf(saida_binaria, "algoritmo,arquivo,tamanho,chave,indice,comparacoes\n");
+
+    // Arquivo CSV para busca por interpolação
+    FILE *saida_interpolacao = fopen("../Resultados/test_interpolation_uniform.csv", "w");
+    if (!saida_interpolacao) { perror("Erro ao abrir arquivo CSV de busca por interpolação"); return 1; }
+    fprintf(saida_interpolacao, "algoritmo,arquivo,tamanho,chave,indice,comparacoes\n");
 
     for (int i = 0; i < num_entradas; i++) {
         int *arr;
         int tamanho;
         const char *tipoEntrada = strstr(entradas[i], "sorted") ? "Ordenado" : "Uniforme";
 
-        // Ler o arquivo de entrada
         arr = carregar_array(entradas[i], &tamanho);
 
-        // Definir a chave que será buscada
-        int chave = arr[tamanho - 1];  // Busca o último valor (pior caso)
+        int chave = arr[tamanho - 1];
 
-        // Medir performance
-        medirPerformance(arr, tamanho, chave, tipoEntrada, saida);
+        medirComparacoesBinaria(arr, tamanho, chave, tipoEntrada, saida_binaria);
+
+        medirComparacoesInterpolacao(arr, tamanho, chave, tipoEntrada, saida_interpolacao);
 
         free(arr);
     }
 
-    fclose(saida);  // Fechar arquivo CSV
-    printf("Todos os resultados salvos em test_binary.csv\n");
+    fclose(saida_binaria);
+    fclose(saida_interpolacao);
+    printf("Todos os resultados salvos em test_binary.csv e test_interpolation.csv\n");
     return 0;
 }
