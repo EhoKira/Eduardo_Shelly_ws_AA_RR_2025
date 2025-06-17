@@ -1,10 +1,10 @@
 #include <stdio.h>
+#include "binary_search.h"
 
 int binarySearch(int arr[], int low, int high, int x)
 {
     if (high >= low) {
         int mid = low + (high - low) / 2;
-
         if (arr[mid] == x)
             return mid;
         if (arr[mid] > x)

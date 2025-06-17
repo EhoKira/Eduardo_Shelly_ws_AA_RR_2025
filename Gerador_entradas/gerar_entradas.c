@@ -7,9 +7,7 @@
 
 // Função para criar o diretório
 void criar_pasta(const char *caminho) {
-    // Tenta criar a pasta e verifica se foi bem-sucedido
     if (mkdir(caminho, 0777) == -1) {
-        // Se a pasta já existir, não faz nada
         if (errno != EEXIST) {
             perror("Erro ao criar pasta");
             exit(1);
@@ -17,45 +15,42 @@ void criar_pasta(const char *caminho) {
     }
 }
 
+// Função para gerar uma sequência ordenada
 void gerar_ordenado(int *arr, int n) {
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++) {
         arr[i] = i + 1;
-}
-
-void gerar_decrescente(int *arr, int n) {
-    for (int i = 0; i < n; i++)
-        arr[i] = n - i;
-}
-
-void embaralhar(int *arr, int n) {
-    for (int i = n - 1; i > 0; i--) {
-        int j = rand() % (i + 1);
-        int tmp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = tmp;
     }
 }
 
+// Função para gerar uma distribuição uniforme de números inteiros, de 1 a n
+void gerar_uniforme(int *arr, int n) {
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % n + 1;
+    }
+}
+
+// Função para salvar os dados no arquivo
 void salvar_em_arquivo(int *arr, int n, const char *nome_arquivo) {
     FILE *fp = fopen(nome_arquivo, "w");
     if (!fp) {
         perror("Erro ao criar arquivo");
         exit(1);
     }
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++) {
         fprintf(fp, "%d\n", arr[i]);
+    }
     fclose(fp);
 }
 
 int main() {
-    int tamanhos[] = {1000, 5000, 10000, 50000, 100000, 500000, 1000000};
+    int tamanhos[] = {1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000};
     const int num_tamanhos = sizeof(tamanhos) / sizeof(tamanhos[0]);
     char nome_arquivo[100];
     
-    // Criação da pasta "../entradas"
-    criar_pasta("../Entradas");  // Ajuste o caminho relativo conforme onde executa
+    // Criação da pasta "../Entradas"
+    criar_pasta("../Entradas");
 
-    srand(time(NULL)); // semente para números aleatórios
+    srand(time(NULL));  // Semente para gerar números aleatórios
 
     for (int i = 0; i < num_tamanhos; i++) {
         int n = tamanhos[i];
@@ -65,15 +60,14 @@ int main() {
             exit(1);
         }
 
-        // Ordenado crescente
+        // Gerar entrada ordenada crescente
         gerar_ordenado(arr, n);
         snprintf(nome_arquivo, sizeof(nome_arquivo), "../Entradas/entrada_%d_sorted.txt", n);
         salvar_em_arquivo(arr, n, nome_arquivo);
 
-        // Aleatório
-        gerar_ordenado(arr, n);
-        embaralhar(arr, n);
-        snprintf(nome_arquivo, sizeof(nome_arquivo), "../Entradas/entrada_%d_random.txt", n);
+        // Gerar entrada uniforme (valores gerados entre 1 e n)
+        gerar_uniforme(arr, n);
+        snprintf(nome_arquivo, sizeof(nome_arquivo), "../Entradas/entrada_%d_uniform.txt", n);
         salvar_em_arquivo(arr, n, nome_arquivo);
 
         free(arr);
