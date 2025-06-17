@@ -8,7 +8,7 @@ Este repositório é destinado para os artefatos do trabalho de seminário da di
 
 - 🔹 **Busca Binária** – `O(log n)`
 - 🔹 **Busca por Interpolação** – `O(log log n)` (em dados uniformes)
-- 🔸 (Opcional) **Busca Sequencial** – `O(n)` – para fins de comparação
+
 
 ---
 
