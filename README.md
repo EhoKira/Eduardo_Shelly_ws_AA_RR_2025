@@ -83,13 +83,13 @@ Isso irá gerar gráficos comparando o número de comparações feitas pela busc
 
 O gráfico abaixo mostra o número de comparações realizadas pela busca binária e pela busca por interpolação para entradas ordenadas.
 
-
+![Gráfico de Entradas Ordenadas](Graficos/Images/img_sorted_graphic.jpg)
 
 **2. Entradas Uniformes** 🔢
 
 O gráfico abaixo mostra o número de comparações realizadas pela busca binária e pela busca por interpolação para entradas uniformes.
 
-
+![Gráfico de Entradas Uniformes](Graficos/Images/img_uniform_graphic.jpg)
 
 ### **Resultados Esperados** 🎯
 
